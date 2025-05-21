@@ -60,6 +60,71 @@ Em cada conversa, a “Trinca” funciona assim:
 
 ## 7. Tecnologias e Ferramentas  ♠️♠️♠️
 
+O projeto **Trinca** utiliza um conjunto de tecnologias modernas que garantem segurança, desempenho e fácil integração entre as camadas da aplicação. A seguir, listamos as principais tecnologias e ferramentas adotadas:
+
+| Camada       | Tecnologia/Ferramenta                                | Justificativa |
+|--------------|-------------------------------------------------------|----------------|
+| **Frontend** | **React**                                             | Biblioteca eficiente para construção de interfaces modernas e reativas. |
+|              | **Chakra UI**                                         | Framework de componentes acessíveis e estilizados, acelera o desenvolvimento visual. |
+|              | **Vite**                                              | Empacotador rápido para React com ótima performance em desenvolvimento. |
+| **Backend**  | **Java 17**                                           | Linguagem robusta e amplamente utilizada em aplicações seguras e escaláveis. |
+|              | **Spring Boot**                                       | Framework completo que facilita a criação de APIs REST e WebSocket com segurança embutida. |
+|              | **Spring Security**                                   | Módulo de segurança que permite autenticação, criptografia de senhas e proteção contra CSRF/XSS. |
+|              | **Spring WebSocket**                                  | Suporte à comunicação em tempo real entre usuários (chat). |
+| **Banco de Dados** | **PostgreSQL**                                 | Banco de dados relacional confiável, gratuito, com forte suporte a segurança e integridade dos dados. |
+|              | **Spring Data JPA**                                   | Abstração de acesso a dados, facilitando a comunicação com o PostgreSQL. |
+| **Criptografia** | **Java Cryptography Architecture (JCA)**         | API padrão do Java para operações de criptografia (AES, RSA, HMAC). |
+|              | **Bouncy Castle**                                     | Biblioteca de suporte adicional para algoritmos modernos e seguros. |
+| **Testes**   | **JUnit 5**                                           | Framework de testes para Java. |
+|              | **Mockito**                                           | Simulação de dependências e comportamentos no backend. |
+| **Deploy**   | **Render / Railway (Backend)**                        | Plataformas gratuitas que suportam aplicações Java com PostgreSQL. |
+|              | **Vercel (Frontend)**                                 | Hospedagem gratuita e rápida para aplicações React. |
+|              | **ElephantSQL / Neon (PostgreSQL)**                  | Serviços de banco de dados PostgreSQL em nuvem com planos gratuitos. |
+
+Todas as ferramentas escolhidas são de **uso gratuito** em seus planos básicos, o que torna o projeto acessível para desenvolvimento acadêmico sem custos.
+
+## 📅 Planejamento de Desenvolvimento – Projeto Trinca (Java/Spring Boot + PostgreSQL)
+
+### 🗓️ Fase 1 – Preparação (13 a 19 de maio)
+- Definição da arquitetura: cliente-servidor com E2EE
+- Escolha das tecnologias:
+  - Frontend: React + Chakra UI
+  - Backend: Java 17 + Spring Boot
+  - Banco de Dados: PostgreSQL
+- Escrita da introdução, requisitos e objetivos
+- Criação do repositório e estrutura inicial dos projetos
+
+### 🗓️ Fase 2 – Protótipo Funcional (20 a 30 de maio)
+- Implementação do backend com Spring Boot:
+  - Registro de usuário com senha criptografada (BCrypt)
+  - Armazenamento da chave pública RSA no banco
+  - Login com autenticação via Spring Security
+- Criação do frontend com React:
+  - Geração de chave RSA no navegador
+  - Interface básica de login, registro e chat
+- Implementação da criptografia ponta a ponta:
+  - Geração de chave AES por mensagem
+  - Criptografia AES da mensagem
+  - Criptografia RSA da chave AES
+- Comunicação via REST e WebSocket com Spring WebSocket
+- Testes manuais com dois usuários
+
+### 🗓️ Fase 3 – Refino e Testes (junho)
+- Implementação de segurança adicional:
+  - Proteção contra CSRF, XSS e DoS
+  - Cookies HttpOnly + SameSite + HTTPS
+- Validações e tratamento de erros
+- Testes automatizados com JUnit 5 e Mockito
+- Escrita da documentação técnica
+
+### 🗓️ Fase 4 – Entrega Final (1 a 4 de julho)
+- Revisão final de código, testes e segurança
+- Preparação dos slides e da apresentação
+- Demonstração prática do envio e recebimento de mensagens seguras
+- Entrega do repositório completo com documentação e link do projeto online
+
+
+
 
 
 
