@@ -42,23 +42,13 @@ Em cada conversa, a “Trinca” funciona assim:
 
 ## 5. Arquitetura e Fluxo de Dados  ♣️♣️♣️
 
-[ Cliente “Trinca” ] ←– HTTPS/WSS –→ [ Servidor Node.js/Express ] ←– MongoDB (chaves públicas + blobs cifrados)
+[ Cliente “Trinca” ] ←– HTTPS/WSS –→ [ Servidor Node.js/Express ] ←– PostgreSQL (chaves públicas + blobs cifrados)
 
 1. **Registro:** cliente gera RSA-2048 → envia chave pública.  
 2. **Início de Chat:** emissor gera AES-256 → cifra mensagem → cifra AES com RSA pública do destinatário.  
 3. **Entrega:** servidor encaminha pacote cifrado; destinatário usa Identidade para decifrar Envelope e obter Segredo.
 
-## 6. Modelagem de Ameaças e Mitigações  ♦️♦️♦️
-| Ameaça         | Mitigação                                                                                  |
-|----------------|--------------------------------------------------------------------------------------------|
-| MITM           | HTTPS/WSS + E2E Encryption                                                                |
-| XSS            | Escapar todo HTML, CSP, sanitização de inputs                                             |
-| SQL/NoSQL Inj. | Prepared Statements / ODM seguros, validação estrita                                       |
-| CSRF           | Tokens anti-CSRF, cookies `SameSite=Strict`                                               |
-| DoS            | Rate limiting, auto-scaling                                                                |
-| Roubo de Cookie| Cookies `HttpOnly; Secure`, validação de origem, HMAC de payload                          |
-
-## 7. Tecnologias e Ferramentas  ♠️♠️♠️
+## 6. Tecnologias e Ferramentas  ♠️♠️♠️
 
 O projeto **Trinca** utiliza um conjunto de tecnologias modernas que garantem segurança, desempenho e fácil integração entre as camadas da aplicação. A seguir, listamos as principais tecnologias e ferramentas adotadas:
 
@@ -94,7 +84,7 @@ Todas as ferramentas escolhidas são de **uso gratuito** em seus planos básicos
 - Escrita da introdução, requisitos e objetivos
 - Criação do repositório e estrutura inicial dos projetos
 
-### 🗓️ Fase 2 – Protótipo Funcional (20 a 30 de maio)
+### 🗓️ Fase 2 – Protótipo Funcional (20 de maio a 30 de junho)
 - Implementação do backend com Spring Boot:
   - Registro de usuário com senha criptografada (BCrypt)
   - Armazenamento da chave pública RSA no banco
@@ -108,8 +98,6 @@ Todas as ferramentas escolhidas são de **uso gratuito** em seus planos básicos
   - Criptografia RSA da chave AES
 - Comunicação via REST e WebSocket com Spring WebSocket
 - Testes manuais com dois usuários
-
-### 🗓️ Fase 3 – Refino e Testes (junho)
 - Implementação de segurança adicional:
   - Proteção contra CSRF, XSS e DoS
   - Cookies HttpOnly + SameSite + HTTPS
@@ -117,7 +105,7 @@ Todas as ferramentas escolhidas são de **uso gratuito** em seus planos básicos
 - Testes automatizados com JUnit 5 e Mockito
 - Escrita da documentação técnica
 
-### 🗓️ Fase 4 – Entrega Final (1 a 4 de julho)
+### 🗓️ Fase 3 – Entrega Final (1 a 4 de julho)
 - Revisão final de código, testes e segurança
 - Preparação dos slides e da apresentação
 - Demonstração prática do envio e recebimento de mensagens seguras
