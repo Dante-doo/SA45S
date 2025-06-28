@@ -1,7 +1,6 @@
 package com.trinca.chatseguro.config;
 
 import com.trinca.chatseguro.service.JwtService;
-import com.trinca.chatseguro.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,6 +55,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
+
+                System.out.println("Autenticado com: " + userDetails.getUsername());
+                System.out.println("Authorities: " + userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

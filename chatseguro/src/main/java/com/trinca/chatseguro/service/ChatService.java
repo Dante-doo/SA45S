@@ -45,7 +45,14 @@ public class ChatService {
         return messageRepository.findBySender(user);
     }
 
-    public void deleteMessage(UUID id) {
+    public void deleteMessage(UUID id, String requesterUsername) throws Exception {
+        Message message = messageRepository.findById(id)
+                .orElseThrow(() -> new Exception("Message not found"));
+
+        if (!message.getSender().getUsername().equals(requesterUsername)) {
+            throw new SecurityException("Only the sender can delete this message");
+        }
+
         messageRepository.deleteById(id);
     }
 }

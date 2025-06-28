@@ -3,6 +3,7 @@ package com.trinca.chatseguro.controller;
 import com.trinca.chatseguro.model.Message;
 import com.trinca.chatseguro.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -18,11 +19,16 @@ public class ChatController {
     private ChatService chatService;
 
     @PostMapping("/send")
+    @ResponseStatus(HttpStatus.CREATED)
     public Message sendMessage(@RequestBody Map<String, String> body, Principal principal) throws Exception {
         String receiver = body.get("receiver");
         String encryptedAesKey = body.get("encryptedAesKey");
         String encryptedMessage = body.get("encryptedMessage");
         String hmac = body.get("hmac");
+
+        if (receiver == null || encryptedAesKey == null || encryptedMessage == null || hmac == null) {
+            throw new IllegalArgumentException("Missing fields in message body");
+        }
 
         return chatService.sendMessage(
                 principal.getName(),
@@ -35,6 +41,7 @@ public class ChatController {
 
     @GetMapping("/inbox")
     public List<Message> inbox(Principal principal) throws Exception {
+        System.out.println("Usuário autenticado: " + principal.getName());
         return chatService.getMessagesForUser(principal.getName());
     }
 
@@ -44,7 +51,8 @@ public class ChatController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteMessage(@PathVariable UUID id) {
-        chatService.deleteMessage(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMessage(@PathVariable UUID id, Principal principal) throws Exception {
+        chatService.deleteMessage(id, principal.getName());
     }
 }

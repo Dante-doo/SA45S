@@ -17,7 +17,6 @@ public class User {
     @Column(nullable = false)
     private String passwordHash;
 
-    @Lob
     @Column(nullable = false)
     private String publicKey; // Armazena a chave pública RSA do usuário
 

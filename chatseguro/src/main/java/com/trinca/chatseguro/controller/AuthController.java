@@ -1,5 +1,6 @@
 package com.trinca.chatseguro.controller;
 
+import com.trinca.chatseguro.exception.UserNotFoundException;
 import com.trinca.chatseguro.model.User;
 import com.trinca.chatseguro.service.JwtService;
 import com.trinca.chatseguro.service.UserService;
@@ -57,10 +58,13 @@ public class AuthController {
     }
 
     @GetMapping("/public-key/{username}")
-    public String getPublicKey(@PathVariable String username) throws Exception {
-        User user = userService.findByUsername(username)
-                .orElseThrow(() -> new Exception("User not found"));
-
-        return user.getPublicKey();
+    public Map<String, String> getPublicKey(@PathVariable String username) throws Exception {
+        return userService.findByUsername(username)
+                .map(user -> Map.of(
+                        "username", user.getUsername(),
+                        "publicKey", user.getPublicKey()
+                ))
+                .orElseThrow(() -> new UserNotFoundException(username));
     }
+
 }
