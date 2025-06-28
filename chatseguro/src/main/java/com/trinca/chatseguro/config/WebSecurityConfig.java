@@ -30,8 +30,7 @@ public class WebSecurityConfig {
                                         "/api/auth/login",
                                         "/api/auth/public-key/**"
                                 ).permitAll()
-                                .requestMatchers("/api/chat/**").authenticated()
-                        // .anyRequest().denyAll() // opcional, só ative se quiser restringir tudo o que não for mapeado
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
