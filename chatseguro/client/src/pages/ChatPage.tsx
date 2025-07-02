@@ -1,5 +1,6 @@
 // src/pages/ChatPage.tsx
 import React, { useState, useEffect, useRef } from 'react'
+import axios from 'axios'
 import {
     Box,
     Flex,
@@ -12,8 +13,10 @@ import {
     Heading,
     Container,
     useColorModeValue,
+    useToast,
 } from '@chakra-ui/react'
 import { ArrowRightIcon } from '@chakra-ui/icons'
+import { encryptForRecipient } from '../util/Crypto'
 
 interface Message {
     id: number
@@ -22,27 +25,60 @@ interface Message {
 }
 
 export default function ChatPage() {
-    const [messages, setMessages] = useState<Message[]>([])    // começa vazio
+    const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
     const scrollRef = useRef<HTMLDivElement>(null)
+    const toast = useToast()
 
-    // auto-scroll sempre que chegar uma nova mensagem
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight
         }
     }, [messages])
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!input.trim()) return
-        const next: Message = {
-            id: messages.length + 1,
-            text: input.trim(),
-            fromMe: true,
+
+        try {
+            // busca chave pública do destinatário
+            const resp = await axios.get<string>(
+                'http://localhost:8080/api/auth/public-key/' + encodeURIComponent('recipientUsername')
+            )
+            const recipientPem = resp.data // PEM format esperado
+
+            // cifrar antes de enviar
+            const { encryptedAesKey, iv, ciphertext, hmac } = await encryptForRecipient(
+                input.trim(),
+                recipientPem
+            )
+
+            // enviar ao servidor
+            await axios.post('/api/messages', {
+                to: 'recipientUsername',
+                encryptedAesKey,
+                iv,
+                ciphertext,
+                hmac,
+            })
+
+            // adicionar localmente
+            const next: Message = {
+                id: messages.length + 1,
+                text: input.trim(),
+                fromMe: true,
+            }
+            setMessages((msgs) => [...msgs, next])
+            setInput('')
+        } catch (err: any) {
+            console.error(err)
+            toast({
+                title: 'Erro ao enviar mensagem.',
+                status: 'error',
+                description: err.response?.data?.message || 'Tente novamente mais tarde.',
+                duration: 3000,
+                isClosable: true,
+            })
         }
-        setMessages((msgs) => [...msgs, next])
-        setInput('')
-        // TODO: aqui você vai mandar para a sua API / WebSocket
     }
 
     const bgOverlay = useColorModeValue('whiteAlpha.900', 'blackAlpha.600')
