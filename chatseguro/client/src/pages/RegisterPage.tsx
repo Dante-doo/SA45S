@@ -15,6 +15,7 @@ import {
     useToast,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { arrayBufferToBase64 } from '../util/Crypto'
 
 export default function RegisterPage() {
     const [name, setName] = useState('')
@@ -49,7 +50,36 @@ export default function RegisterPage() {
 
         setIsSubmitting(true)
         try {
-            const payload = { name, email, password }
+            // 1) Gera o par de chaves RSA
+            const keyPair = await window.crypto.subtle.generateKey(
+                {
+                    name: 'RSA-OAEP',
+                    modulusLength: 2048,
+                    publicExponent: new Uint8Array([1, 0, 1]),
+                    hash: 'SHA-256',
+                },
+                true,
+                ['encrypt', 'decrypt']
+            )
+
+            // 2) Exporta a chave pública (SPKI)
+            const spki = await window.crypto.subtle.exportKey(
+                'spki',
+                keyPair.publicKey
+            )
+
+            // 3) Converte para Base64
+            const publicKeyBase64 = arrayBufferToBase64(spki)
+
+            // 4) Monta o payload incluindo a chave pública
+            const payload = {
+                username: name,
+                email,
+                password,
+                publicKey: publicKeyBase64,
+            }
+
+            // 5) Chama sua API
             await axios.post('/api/auth/register', payload)
 
             toast({
@@ -88,21 +118,9 @@ export default function RegisterPage() {
             bgSize="cover"
             bgRepeat="no-repeat"
         >
-            <Box
-                pos="absolute"
-                inset="0"
-                bg="blackAlpha.400"
-                zIndex={0}
-            />
+            <Box pos="absolute" inset="0" bg="blackAlpha.400" zIndex={0} />
 
-            <Container
-                maxW="md"
-                bg="white"
-                boxShadow="lg"
-                borderRadius="lg"
-                p={8}
-                zIndex={1}
-            >
+            <Container maxW="md" bg="white" boxShadow="lg" borderRadius="lg" p={8} zIndex={1}>
                 <Heading mb={6} textAlign="center">
                     Registrar
                 </Heading>
@@ -118,9 +136,7 @@ export default function RegisterPage() {
                                 placeholder="Seu nome"
                             />
                             {isSubmitted && isNameError && (
-                                <FormErrorMessage>
-                                    Nome é obrigatório.
-                                </FormErrorMessage>
+                                <FormErrorMessage>Nome é obrigatório.</FormErrorMessage>
                             )}
                         </FormControl>
 
@@ -133,9 +149,7 @@ export default function RegisterPage() {
                                 placeholder="seu@email.com"
                             />
                             {isSubmitted && isEmailError && (
-                                <FormErrorMessage>
-                                    E-mail inválido.
-                                </FormErrorMessage>
+                                <FormErrorMessage>E-mail inválido.</FormErrorMessage>
                             )}
                         </FormControl>
 
@@ -159,15 +173,11 @@ export default function RegisterPage() {
                             <Input
                                 type="password"
                                 value={confirmPassword}
-                                onChange={(e) =>
-                                    setConfirmPassword(e.target.value)
-                                }
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                                 placeholder="digite novamente"
                             />
                             {isSubmitted && isConfirmError && (
-                                <FormErrorMessage>
-                                    As senhas não coincidem.
-                                </FormErrorMessage>
+                                <FormErrorMessage>As senhas não coincidem.</FormErrorMessage>
                             )}
                         </FormControl>
 
@@ -184,12 +194,7 @@ export default function RegisterPage() {
 
                 <Text mt={4} textAlign="center" color="gray.600">
                     Já tem uma conta?{' '}
-                    <Button
-                        as={RouterLink}
-                        to="/login"
-                        variant="link"
-                        colorScheme="red"
-                    >
+                    <Button as={RouterLink} to="/login" variant="link" colorScheme="red">
                         Entrar
                     </Button>
                 </Text>
