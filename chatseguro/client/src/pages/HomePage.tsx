@@ -60,7 +60,7 @@ export default function HomePage() {
                             maxW="3xl"
                         >
                             Converse com total privacidade e estilo. Use nossa plataforma
-                            simples e responsiva em qualquer dispositivo.
+                            a qualquer hora e em qualquer dispositivo.
                         </Text>
 
                         <Stack

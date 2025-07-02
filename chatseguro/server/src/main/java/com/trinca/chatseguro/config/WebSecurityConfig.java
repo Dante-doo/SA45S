@@ -58,7 +58,6 @@ public class WebSecurityConfig {
         config.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // aplica a configuração para todos endpoints (/api/** ou /**)
         source.registerCorsConfiguration("/**", config);
         return source;
     }

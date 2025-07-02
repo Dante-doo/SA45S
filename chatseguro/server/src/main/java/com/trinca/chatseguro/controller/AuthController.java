@@ -28,10 +28,11 @@ public class AuthController {
     @PostMapping("/register")
     public User register(@RequestBody Map<String, String> body) throws Exception {
         String username = body.get("username");
+        String email = body.get("email");
         String password = body.get("password");
         String publicKey = body.get("publicKey");
 
-        return userService.register(username, password, publicKey);
+        return userService.register(username, email, password, publicKey);
     }
 
     @PostMapping("/login")

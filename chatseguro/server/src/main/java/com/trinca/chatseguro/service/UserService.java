@@ -17,17 +17,14 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User register(String username, String rawPassword, String publicKey) throws Exception {
+    public User register(String username, String email, String rawPassword, String publicKey) throws Exception {
         if (userRepository.existsByUsername(username)) {
             throw new Exception("Username already exists.");
         }
 
         String hashedPassword = passwordEncoder.encode(rawPassword);
 
-        System.out.println("Senha hash gerada: " + hashedPassword);
-        //TESTE
-
-        User user = new User(username, hashedPassword, publicKey);
+        User user = new User(username, email, hashedPassword, publicKey);
         return userRepository.save(user);
     }
 
