@@ -214,3 +214,15 @@ export async function decryptFromSender(
     const decoder = new TextDecoder();
     return decoder.decode(decrypted);
 }
+
+export async function importPrivateKey(pem: string): Promise<CryptoKey> {
+    const b64 = pemToBase64(pem); // Reutiliza a função que já existe
+    const buffer = base64ToArrayBuffer(b64);
+    return await crypto.subtle.importKey(
+        'pkcs8', // Formato para chaves privadas
+        buffer,
+        { name: 'RSA-OAEP', hash: 'SHA-256' },
+        true,
+        ['decrypt']
+    );
+}

@@ -5,7 +5,16 @@ public class SendMessageDto {
     private String receiver;
     private String encryptedAesKey;
     private String encryptedMessage;
+    private String iv;
     private String hmac;
+
+    public String getIv() {
+        return iv;
+    }
+
+    public void setIv(String iv) {
+        this.iv = iv;
+    }
 
     public String getReceiver() {
         return receiver;
