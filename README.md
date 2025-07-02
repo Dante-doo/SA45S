@@ -67,9 +67,6 @@ O projeto **Trinca** utiliza um conjunto de tecnologias modernas que garantem se
 |              | **Bouncy Castle**                                     | Biblioteca de suporte adicional para algoritmos modernos e seguros. |
 | **Testes**   | **JUnit 5**                                           | Framework de testes para Java. |
 |              | **Mockito**                                           | Simulação de dependências e comportamentos no backend. |
-| **Deploy**   | **Render / Railway (Backend)**                        | Plataformas gratuitas que suportam aplicações Java com PostgreSQL. |
-|              | **Vercel (Frontend)**                                 | Hospedagem gratuita e rápida para aplicações React. |
-|              | **ElephantSQL / Neon (PostgreSQL)**                  | Serviços de banco de dados PostgreSQL em nuvem com planos gratuitos. |
 
 Todas as ferramentas escolhidas são de **uso gratuito** em seus planos básicos, o que torna o projeto acessível para desenvolvimento acadêmico sem custos.
 
