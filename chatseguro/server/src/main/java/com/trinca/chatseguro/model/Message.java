@@ -1,6 +1,8 @@
 package com.trinca.chatseguro.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,12 +23,15 @@ public class Message {
     private User receiver;
 
     @Column(nullable = false)
+    @Size(max = 1000)
     private String encryptedAesKey; // AES cifrada com RSA
 
     @Column(nullable = false)
+    @Size(max = 1000)
     private String encryptedMessage; // Mensagem cifrada com AES
 
     @Column(nullable = false)
+    @Size(max = 1000)
     private String hmac; // HMAC-SHA256 da mensagem
 
     @Column(nullable = false)

@@ -1,10 +1,12 @@
+// src/services/socketService.ts
 import { Client, IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
+// As suas interfaces MessagePayload e SendMessageDto permanecem as mesmas
 interface MessagePayload {
     id: string;
-    sender: { id: string, username: string };
-    receiver: { id: string, username: string };
+    sender: { id: string; username: string };
+    receiver: { id: string; username: string };
     encryptedAesKey: string;
     encryptedMessage: string;
     iv: string;
@@ -20,72 +22,66 @@ interface SendMessageDto {
     hmac: string;
 }
 
-// --- Implementação do Serviço ---
-
 class SocketService {
-    private stompClient: Client | null = null;
+    private client: Client | null = null;
 
     public connect(onConnectCallback: () => void, onErrorCallback: (err: any) => void): void {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            console.error("Token de autenticação não encontrado.");
-            onErrorCallback(new Error("Usuário não autenticado."));
-            return;
-        }
-
-        if (this.stompClient?.active) {
-            console.warn('Já existe uma conexão STOMP ativa.');
-            return;
-        }
-
-        this.stompClient = new Client({
-            webSocketFactory: () => new SockJS('http://192.168.0.143:8080/ws'),
-
-            connectHeaders: {
-                Authorization: `Bearer ${token}`,
-            },
-
-            onConnect: () => {
-                console.log('Conectado ao servidor WebSocket via STOMP!');
-                onConnectCallback();
-            },
-
-            onStompError: (frame) => {
-                console.error('Erro no broker STOMP:', frame.headers['message']);
-                console.error('Detalhes:', frame.body);
-                onErrorCallback(frame);
-            },
-            
-            reconnectDelay: 5000,
-        });
-
-        this.stompClient.activate();
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        onErrorCallback(new Error("Usuário não autenticado."));
+        return;
     }
 
+    if (this.client && this.client.active) {
+        console.warn("Conexão STOMP já está ativa.");
+        return;
+    }
+
+    // --- MUDANÇA CRUCIAL AQUI ---
+    // Anexe o token como um parâmetro de query na URL.
+    const socketUrl = `http://${window.location.hostname}:8080/ws?token=${token}`;
+
+    this.client = new Client({
+        // Use a nova URL que contém o token.
+        webSocketFactory: () => new SockJS(socketUrl),
+
+        // Não precisamos mais de cabeçalhos de conexão.
+        // connectHeaders: { ... },
+
+        onConnect: onConnectCallback,
+        onStompError: (frame) => {
+            console.error('Erro no broker STOMP:', frame.headers['message']);
+            console.error('Detalhes:', frame.body);
+            onErrorCallback(frame);
+        },
+        reconnectDelay: 5000,
+    });
+
+    this.client.activate();
+}
+
     public disconnect(): void {
-        this.stompClient?.deactivate();
-        console.log('Desconectado do servidor WebSocket.');
+        this.client?.deactivate();
+        this.client = null;
+        console.log("Cliente STOMP desativado e desconectado.");
     }
 
     public subscribeToTopic(destination: string, onMessageReceived: (message: MessagePayload) => void) {
-        if (!this.stompClient?.active) {
-            console.error("Não é possível se inscrever, cliente STOMP não está ativo.");
+        if (!this.client?.active) {
+            console.error("Cliente STOMP não ativo. Não é possível se inscrever.");
             return;
         }
-
-        return this.stompClient.subscribe(destination, (message: IMessage) => {
-            const parsedMessage: MessagePayload = JSON.parse(message.body);
-            onMessageReceived(parsedMessage);
+        return this.client.subscribe(destination, (message: IMessage) => {
+            onMessageReceived(JSON.parse(message.body));
         });
     }
 
     public sendMessage(payload: SendMessageDto): void {
-        if (!this.stompClient?.active) {
-            console.error("Não é possível enviar mensagem, cliente STOMP não está ativo.");
+        if (!this.client?.active) {
+            console.error("Cliente STOMP não ativo. Não é possível enviar mensagem.");
             return;
         }
-
-        this.stompClient.publish({
+        this.client.publish({
             destination: '/app/chat.sendMessage',
             body: JSON.stringify(payload),
         });

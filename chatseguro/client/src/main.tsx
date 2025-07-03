@@ -6,7 +6,7 @@ import App from './App'
 import theme from './theme'
 import './index.css'
 import axios from 'axios'
-axios.defaults.baseURL = 'http://192.168.0.143:8080'
+axios.defaults.baseURL = 'http://192.168.160.152:8080'
 
 axios.interceptors.request.use(config => {
     const token = localStorage.getItem('authToken');
@@ -17,11 +17,11 @@ axios.interceptors.request.use(config => {
 });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
+    // <React.StrictMode>
         <ChakraProvider theme={theme}>
             <BrowserRouter>
                 <App />
             </BrowserRouter>
         </ChakraProvider>
-    </React.StrictMode>
+    // </React.StrictMode>
 )

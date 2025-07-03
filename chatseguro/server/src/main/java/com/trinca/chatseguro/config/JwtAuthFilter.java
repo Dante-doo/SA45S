@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,47 +30,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String path = request.getServletPath();
+        String jwt = null;
+        String authHeader = request.getHeader("Authorization");
 
-        if (path.startsWith("/api/auth/register")
-                || path.startsWith("/api/auth/login")
-                || path.startsWith("/api/auth/public-key")) {
-            filterChain.doFilter(request, response);
-            return;
+        // Tenta pegar o token do cabeçalho Authorization primeiro
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
         }
-
-        final String authHeader = request.getHeader("Authorization");
-
-        // se não tiver header ou não começar com Bearer, deixa passar
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
+        // --- MUDANÇA CRUCIAL AQUI ---
+        // Se não encontrou no cabeçalho e for uma conexão WebSocket, tenta pegar do parâmetro de query
+        else if (request.getRequestURI().contains("/ws") && request.getParameter("token") != null) {
+            jwt = request.getParameter("token");
         }
+        // -----------------------------
 
-        final String jwt = authHeader.substring(7);
-        final String username = jwtService.extractUsername(jwt);
+        if (jwt != null) {
+            final String username = jwtService.extractUsername(jwt);
 
-        if (username != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            var userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtService.isTokenValid(jwt, userDetails.getUsername())) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
 
-            if (jwtService.isTokenValid(jwt, userDetails.getUsername())) {
-                var authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-
-                // logs opcionais
-                System.out.println("Autenticado com: " + userDetails.getUsername());
-                System.out.println("Authorities: " + userDetails.getAuthorities());
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
         }
 

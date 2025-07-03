@@ -60,7 +60,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         // Permite que os frontends listados acessem o backend.
-        config.setAllowedOrigins(List.of("http://localhost:5173", "http://192.168.0.143:5173")); // Adicione o IP da sua máquina
+        config.setAllowedOrigins(List.of("http://localhost:5173", "http://192.168.160.152:5173")); // Adicione o IP da sua máquina
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
