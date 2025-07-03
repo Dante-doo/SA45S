@@ -16,7 +16,7 @@ import {
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('')
+    const [name, setName] = useState('')
     const [password, setPassword] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSubmitted, setIsSubmitted] = useState(false)
@@ -24,14 +24,14 @@ export default function LoginPage() {
     const navigate = useNavigate()
 
     // Validações
-    const isEmailError = !/\S+@\S+\.\S+/.test(email)
+    //const isEmailError = !/\S+@\S+\.\S+/.test(email)
     const isPasswordError = password.length < 6
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitted(true)
 
-        if (isEmailError || isPasswordError) {
+        if ( isPasswordError) {
             toast({
                 title: 'Corrija os erros no formulário.',
                 status: 'error',
@@ -43,7 +43,7 @@ export default function LoginPage() {
 
         setIsSubmitting(true)
         try {
-            const payload = { email, password }
+            const payload = { username: name, password }
             const response = await axios.post('/api/auth/login', payload)
             // supondo que o token vem em response.data.token
             const { token } = response.data
@@ -55,7 +55,7 @@ export default function LoginPage() {
                 duration: 2000,
                 isClosable: true,
             })
-            navigate('/') // ou dashboard
+            navigate('/chat') // ou dashboard
         } catch (err: any) {
             console.error(err)
             toast({
@@ -105,17 +105,14 @@ export default function LoginPage() {
 
                 <form onSubmit={handleSubmit}>
                     <Stack spacing={4}>
-                        <FormControl isInvalid={isSubmitted && isEmailError}>
-                            <FormLabel>E-mail</FormLabel>
+                        <FormControl isInvalid={isSubmitted}>
+                            <FormLabel>Nome</FormLabel>
                             <Input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="seu@email.com"
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Seu nome"
                             />
-                            {isSubmitted && isEmailError && (
-                                <FormErrorMessage>E-mail inválido.</FormErrorMessage>
-                            )}
                         </FormControl>
 
                         <FormControl isInvalid={isSubmitted && isPasswordError}>
