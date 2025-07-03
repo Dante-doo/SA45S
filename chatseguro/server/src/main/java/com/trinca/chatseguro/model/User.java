@@ -1,6 +1,8 @@
 package com.trinca.chatseguro.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
 import java.util.UUID;
 
 @Entity
@@ -21,6 +23,7 @@ public class User {
     private String passwordHash;
 
     @Column(nullable = false)
+    @Size(max = 700)
     private String publicKey; // Armazena a chave pública RSA do usuário
 
     public User() {

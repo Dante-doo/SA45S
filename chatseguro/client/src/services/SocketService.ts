@@ -39,7 +39,7 @@ class SocketService {
         }
 
         this.stompClient = new Client({
-            webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+            webSocketFactory: () => new SockJS('http://192.168.0.143:8080/ws'),
 
             connectHeaders: {
                 Authorization: `Bearer ${token}`,
