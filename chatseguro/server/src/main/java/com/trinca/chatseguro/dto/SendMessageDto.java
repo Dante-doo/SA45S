@@ -6,7 +6,6 @@ public class SendMessageDto {
     private String encryptedAesKey;
     private String encryptedMessage;
     private String iv;
-    private String hmac;
 
     public String getIv() {
         return iv;
@@ -40,11 +39,4 @@ public class SendMessageDto {
         this.encryptedMessage = encryptedMessage;
     }
 
-    public String getHmac() {
-        return hmac;
-    }
-
-    public void setHmac(String hmac) {
-        this.hmac = hmac;
-    }
 }

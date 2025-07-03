@@ -19,7 +19,6 @@ interface SendMessageDto {
     encryptedAesKey: string;
     encryptedMessage: string;
     iv: string;
-    hmac: string;
 }
 
 class SocketService {

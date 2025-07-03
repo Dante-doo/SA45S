@@ -1,8 +1,9 @@
-import { Routes, Route } from 'react-router-dom'
-import HomePage from './pages/HomePage'
-import RegisterPage from './pages/RegisterPage'
-import LoginPage from './pages/LoginPage'
-import ChatPage from './pages/ChatPage'
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import RegisterPage from './pages/RegisterPage';
+import LoginPage from './pages/LoginPage';
+import ChatPage from './pages/ChatPage';
+import ProtectedRoute from './components/ProtectedRoute'; // <-- IMPORTE O NOVO COMPONENTE
 
 export default function App() {
     return (
@@ -10,7 +11,16 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/chat" element={<ChatPage />} />
+            
+            {/* ROTA PROTEGIDA */}
+            <Route 
+                path="/chat" 
+                element={
+                    <ProtectedRoute>
+                        <ChatPage />
+                    </ProtectedRoute>
+                } 
+            />
         </Routes>
-    )
+    );
 }

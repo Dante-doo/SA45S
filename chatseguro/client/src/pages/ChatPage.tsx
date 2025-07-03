@@ -42,7 +42,8 @@ export default function ChatPage() {
     const [messages, setMessages] = useState<DisplayMessage[]>([]);
     const [input, setInput] = useState('');
     const [myUsername, setMyUsername] = useState<string>('');
-    const privateKeyRef = useRef<CryptoKey | null>(null); // Ref para guardar a chave privada importada
+    const privateKeyRef = useRef<CryptoKey | null>(null); 
+    const [isChatReady, setIsChatReady] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const toast = useToast();
 
@@ -88,10 +89,58 @@ export default function ChatPage() {
         };
 
         const onConnect = (username: string) => {
-            socketService.subscribeToTopic(`/topic/messages/${username}`, async (message: ReceivedMessage) => {
-                // ... (a lógica de descriptografia permanece a mesma)
-            });
-        };
+        const topic = `/topic/messages/${username}`;
+        console.log(`FRONTEND: Inscrevendo-se no tópico: [${topic}]`);
+
+        socketService.subscribeToTopic(topic, async (message: ReceivedMessage) => {
+            console.log("Nova mensagem recebida!", message);
+
+            setIsChatReady(true); // <-- Habilita o chat
+
+            // 1. VERIFICAÇÃO DE SEGURANÇA
+            // Garante que a chave privada foi carregada antes de tentar descriptografar.
+            if (!privateKeyRef.current) {
+                console.error("A chave privada não está carregada para descriptografar.");
+                toast({ title: "Erro de segurança: chave não encontrada.", status: "error" });
+                return;
+            }
+
+            try {
+                // 2. DESCRIPTOGRAFIA DA MENSAGEM
+                // Chama a função do seu utilitário de criptografia.
+                const decryptedText = await decryptFromSender(
+                    message.encryptedAesKey,
+                    message.iv,
+                    message.encryptedMessage,
+                    privateKeyRef.current
+                );
+
+                // 3. ATUALIZAÇÃO DA INTERFACE (UI)
+                // Cria o objeto de mensagem formatado para exibição.
+                const newMessage: DisplayMessage = {
+                    id: message.id, // Usa o ID real vindo do backend
+                    text: decryptedText,
+                    fromMe: false, // Mensagens recebidas nunca são "de mim"
+                    senderUsername: message.sender.username,
+                };
+
+                // Adiciona a nova mensagem ao estado, fazendo com que o React a renderize na tela.
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+            } catch (error) {
+                // 4. TRATAMENTO DE ERROS
+                // Caso a descriptografia falhe (ex: mensagem corrompida ou chave errada).
+                console.error("Falha ao descriptografar a mensagem:", error);
+                toast({
+                    title: "Recebida uma mensagem corrompida.",
+                    description: "Não foi possível exibir a última mensagem recebida.",
+                    status: 'warning',
+                    duration: 5000,
+                    isClosable: true
+                });
+            }
+        });
+    };
 
         const onError = (err: any) => {
             toast({
@@ -136,14 +185,13 @@ const handleSend = async () => {
         const resp = await axios.get<{ publicKey: string }>(`/api/auth/public-key/${recipientUsername}`);
         const recipientPem = resp.data.publicKey;
 
-        const { encryptedAesKey, iv, ciphertext, hmac } = await encryptForRecipient(input.trim(), recipientPem);
+        const { encryptedAesKey, iv, ciphertext } = await encryptForRecipient(input.trim(), recipientPem);
         
         socketService.sendMessage({
             receiver: recipientUsername,
             encryptedAesKey,
             encryptedMessage: ciphertext,
             iv,
-            hmac,
         });
 
         const next: DisplayMessage = {
@@ -201,8 +249,8 @@ const handleSend = async () => {
 
                     {/* Input */}
                     <HStack borderTop="1px solid" borderColor="gray.200" p={3}>
-                        <Input placeholder="Digite sua mensagem..." value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSend()} bg="white" />
-                        <IconButton aria-label="Enviar" icon={<ArrowRightIcon />} colorScheme="red" onClick={handleSend} />
+                        <Input placeholder="Digite sua mensagem..." value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSend()} bg="white"/>
+                        <IconButton aria-label="Enviar" icon={<ArrowRightIcon />} colorScheme="red" onClick={handleSend}/>
                     </HStack>
                 </Box>
             </Container>

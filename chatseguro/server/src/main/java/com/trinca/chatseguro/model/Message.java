@@ -27,29 +27,32 @@ public class Message {
     private String encryptedAesKey; // AES cifrada com RSA
 
     @Column(nullable = false)
-    @Size(max = 1000)
+    @Size(max = 8000)
     private String encryptedMessage; // Mensagem cifrada com AES
+
+//    @Column(nullable = false)
+//    @Size(max = 1000)
+//    private String hmac; // HMAC-SHA256 da mensagem
 
     @Column(nullable = false)
     @Size(max = 1000)
-    private String hmac; // HMAC-SHA256 da mensagem
+    private String iv;
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    public Message() {
-    }
-
-    public Message(User sender, User receiver, String encryptedAesKey, String encryptedMessage, String hmac, LocalDateTime timestamp) {
+    public Message(User sender, User receiver, String encryptedAesKey, String encryptedMessage, String iv, LocalDateTime timestamp) {
         this.sender = sender;
         this.receiver = receiver;
         this.encryptedAesKey = encryptedAesKey;
         this.encryptedMessage = encryptedMessage;
-        this.hmac = hmac;
+        this.iv = iv;
         this.timestamp = timestamp;
     }
 
-    // Getters e Setters
+    public Message() {
+
+    }
 
     public UUID getId() {
         return id;
@@ -90,13 +93,21 @@ public class Message {
     public void setEncryptedMessage(String encryptedMessage) {
         this.encryptedMessage = encryptedMessage;
     }
+//
+//    public String getHmac() {
+//        return hmac;
+//    }
+//
+//    public void setHmac(String hmac) {
+//        this.hmac = hmac;
+//    }
 
-    public String getHmac() {
-        return hmac;
+    public String getIv() {
+        return iv;
     }
 
-    public void setHmac(String hmac) {
-        this.hmac = hmac;
+    public void setIv(String iv) {
+        this.iv = iv;
     }
 
     public LocalDateTime getTimestamp() {

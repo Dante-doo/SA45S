@@ -21,7 +21,7 @@ public class ChatService {
     private UserRepository userRepository;
 
     public Message sendMessage(String senderUsername, String receiverUsername,
-                               String encryptedAesKey, String encryptedMessage, String hmac) throws Exception {
+                               String encryptedAesKey, String encryptedMessage, String iv) throws Exception {
 
         User sender = userRepository.findByUsername(senderUsername)
                 .orElseThrow(() -> new Exception("Sender not found"));
@@ -29,7 +29,7 @@ public class ChatService {
         User receiver = userRepository.findByUsername(receiverUsername)
                 .orElseThrow(() -> new Exception("Receiver not found"));
 
-        Message message = new Message(sender, receiver, encryptedAesKey, encryptedMessage, hmac, LocalDateTime.now());
+        Message message = new Message(sender, receiver, encryptedAesKey, encryptedMessage, iv, LocalDateTime.now());
         return messageRepository.save(message);
     }
 

@@ -11,7 +11,7 @@ public class MessageDto {
     public String        receiverUsername;
     public String        encryptedAesKey;
     public String        encryptedMessage;
-    public String        hmac;
+    public String        iv;
     public LocalDateTime timestamp;
 
     public static MessageDto fromEntity(Message m) {
@@ -21,7 +21,7 @@ public class MessageDto {
         dto.receiverUsername = m.getReceiver().getUsername();
         dto.encryptedAesKey  = m.getEncryptedAesKey();
         dto.encryptedMessage = m.getEncryptedMessage();
-        dto.hmac             = m.getHmac();
+        dto.iv               = m.getIv();
         dto.timestamp        = m.getTimestamp();
         return dto;
     }

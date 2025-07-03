@@ -29,12 +29,12 @@ public class WebSocketChatController {
                 messageDto.getReceiver(),
                 messageDto.getEncryptedAesKey(),
                 messageDto.getEncryptedMessage(),
-                messageDto.getHmac()
+                messageDto.getIv()
         );
 
         String destination = "/topic/messages/" + messageDto.getReceiver();
 
-        System.out.println("Enviando mensagem para o tópico: " + destination);
+        System.out.println("BACKEND: Enviando mensagem para o tópico: [" + destination + "]");
 
         messagingTemplate.convertAndSend(destination, savedMessage);
     }
