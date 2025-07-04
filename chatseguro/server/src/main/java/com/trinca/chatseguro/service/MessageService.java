@@ -14,6 +14,7 @@ import java.util.List;
 public class MessageService {
 
     @Autowired
+    private MessageRepository repo;
 
     public List<Message> getConversation(User me, User other) {
         List<Message> sent     = repo.findBySenderAndReceiverOrderByTimestampAsc(me, other);
