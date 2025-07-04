@@ -1,4 +1,3 @@
-// src/pages/ChatPage.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import {
@@ -16,21 +15,18 @@ import {
     useToast,
 } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
-// Importe as duas funções de criptografia necessárias
-import { encryptForRecipient, decryptFromSender, importPrivateKey } from '../util/Crypto'; 
+import { encryptForRecipient, decryptFromSender, importPrivateKey } from '../util/Crypto';
 import socketService from '../services/SocketService';
 
-// Interface de mensagem que o backend envia (payload do WebSocket)
 interface ReceivedMessage {
-    id: string; // UUID do backend
+    id: string;
     sender: { username: string };
     encryptedAesKey: string;
-    encryptedMessage: string; // No seu Crypto.ts, isso é o 'ciphertext'
+    encryptedMessage: string;
     iv: string;
     hmac: string;
 }
 
-// Interface para a mensagem exibida na UI
 interface DisplayMessage {
     id: string;
     text: string;
@@ -49,22 +45,17 @@ export default function ChatPage() {
 
     const effectRan = useRef(false);
 
-
-    // Efeito para rolar para a última mensagem
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages]);
 
-    // Efeito principal para conexão e inscrição
     useEffect(() => {
-        // Se já rodamos o efeito, não faça nada.
         if (effectRan.current === true) {
             return;
         }
 
-        // --- A sua lógica de inicialização permanece a mesma ---
         const initializeUser = async () => {
             try {
                 const loggedInUser = prompt("Para fins de teste, digite seu nome de usuário:");
@@ -95,10 +86,8 @@ export default function ChatPage() {
         socketService.subscribeToTopic(topic, async (message: ReceivedMessage) => {
             console.log("Nova mensagem recebida!", message);
 
-            setIsChatReady(true); // <-- Habilita o chat
+            setIsChatReady(true);
 
-            // 1. VERIFICAÇÃO DE SEGURANÇA
-            // Garante que a chave privada foi carregada antes de tentar descriptografar.
             if (!privateKeyRef.current) {
                 console.error("A chave privada não está carregada para descriptografar.");
                 toast({ title: "Erro de segurança: chave não encontrada.", status: "error" });
@@ -106,8 +95,6 @@ export default function ChatPage() {
             }
 
             try {
-                // 2. DESCRIPTOGRAFIA DA MENSAGEM
-                // Chama a função do seu utilitário de criptografia.
                 const decryptedText = await decryptFromSender(
                     message.encryptedAesKey,
                     message.iv,
@@ -115,21 +102,16 @@ export default function ChatPage() {
                     privateKeyRef.current
                 );
 
-                // 3. ATUALIZAÇÃO DA INTERFACE (UI)
-                // Cria o objeto de mensagem formatado para exibição.
                 const newMessage: DisplayMessage = {
-                    id: message.id, // Usa o ID real vindo do backend
+                    id: message.id,
                     text: decryptedText,
-                    fromMe: false, // Mensagens recebidas nunca são "de mim"
+                    fromMe: false,
                     senderUsername: message.sender.username,
                 };
 
-                // Adiciona a nova mensagem ao estado, fazendo com que o React a renderize na tela.
                 setMessages((prevMessages) => [...prevMessages, newMessage]);
 
             } catch (error) {
-                // 4. TRATAMENTO DE ERROS
-                // Caso a descriptografia falhe (ex: mensagem corrompida ou chave errada).
                 console.error("Falha ao descriptografar a mensagem:", error);
                 toast({
                     title: "Recebida uma mensagem corrompida.",
@@ -158,23 +140,16 @@ export default function ChatPage() {
             }
         });
 
-        // A função de limpeza agora só precisa desconectar
         return () => {
-            // Marca que o efeito rodou para que não rode novamente na segunda montagem
             effectRan.current = true;
             socketService.disconnect();
         };
 
-    // O array vazio ainda é correto, para que o React só considere este efeito na montagem/desmontagem
-    }, []); // O array de dependências vazio garante que isso rode apenas uma vez
-
-    // Dentro do seu componente ChatPage
+    }, []);
 
 const handleSend = async () => {
     if (!input.trim() || !myUsername) return;
 
-    // --- MUDANÇA IMPORTANTE AQUI ---
-    // Pergunta para quem é a mensagem, em vez de usar um nome fixo.
     const recipientUsername = prompt("Para quem você quer enviar a mensagem?");
     if (!recipientUsername) {
         toast({ title: "Destinatário não informado.", status: "warning" });
@@ -217,7 +192,6 @@ const handleSend = async () => {
     const bgOverlay = useColorModeValue('whiteAlpha.900', 'blackAlpha.600');
 
     return (
-        // O seu JSX permanece o mesmo
         <Box as="section" w="100%" h="100vh" pos="relative" bgImage="url('/background.jpg')" bgPos="center" bgSize="cover" bgRepeat="no-repeat">
             <Box pos="absolute" inset="0" bg="blackAlpha.600" zIndex={0} />
 
@@ -226,7 +200,7 @@ const handleSend = async () => {
                 <Flex align="center" mb={4}>
                     <Avatar name="Chat Trinca" size="sm" mr={3} />
                     <Heading size="md" color="white">
-                        Chat com { "recipientUsername" /* TODO: Tornar dinâmico */ }
+                        Chat com { "recipientUsername" }
                     </Heading>
                 </Flex>
 

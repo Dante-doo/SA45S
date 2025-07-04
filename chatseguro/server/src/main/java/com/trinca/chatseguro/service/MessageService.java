@@ -14,12 +14,7 @@ import java.util.List;
 public class MessageService {
 
     @Autowired
-    private MessageRepository repo;
 
-    /**
-     * Retorna a “conversa” completa (enviadas e recebidas) entre dois users,
-     * já ordenada por timestamp ascendente.
-     */
     public List<Message> getConversation(User me, User other) {
         List<Message> sent     = repo.findBySenderAndReceiverOrderByTimestampAsc(me, other);
         List<Message> received = repo.findBySenderAndReceiverOrderByTimestampAsc(other, me);
@@ -27,7 +22,6 @@ public class MessageService {
         List<Message> all = new ArrayList<>();
         all.addAll(sent);
         all.addAll(received);
-        // ordena a lista combinada
         all.sort(Comparator.comparing(Message::getTimestamp));
         return all;
     }

@@ -23,8 +23,6 @@ export default function LoginPage() {
     const toast = useToast()
     const navigate = useNavigate()
 
-    // Validações
-    //const isEmailError = !/\S+@\S+\.\S+/.test(email)
     const isPasswordError = password.length < 6
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +43,6 @@ export default function LoginPage() {
         try {
             const payload = { username: name, password }
             const response = await axios.post('/api/auth/login', payload)
-            // supondo que o token vem em response.data.token
             const { token } = response.data
             localStorage.setItem('authToken', token)
 
@@ -55,7 +52,7 @@ export default function LoginPage() {
                 duration: 2000,
                 isClosable: true,
             })
-            navigate('/chat') // ou dashboard
+            navigate('/chat')
         } catch (err: any) {
             console.error(err)
             toast({

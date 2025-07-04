@@ -3,7 +3,7 @@ import HomePage from './pages/HomePage';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import ChatPage from './pages/ChatPage';
-import ProtectedRoute from './components/ProtectedRoute'; // <-- IMPORTE O NOVO COMPONENTE
+import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
     return (

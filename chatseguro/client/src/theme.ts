@@ -1,13 +1,10 @@
-// src/theme.ts
 import { extendTheme, ThemeConfig } from '@chakra-ui/react'
 
-// Configuração de modo de cor
 const config: ThemeConfig = {
     initialColorMode: 'light',
     useSystemColorMode: false,
 }
 
-// Paleta inspirada em cartas de baralho (vermelho, preto e branco)
 const colors = {
     red: {
         50:  '#ffe5e5',
@@ -38,13 +35,11 @@ const colors = {
     },
 }
 
-// Tipografia padrão (pode manter Inter ou trocar)
 const fonts = {
     heading: `'Inter', sans-serif`,
     body:    `'Inter', sans-serif`,
 }
 
-// Componentes customizados (opcional)
 const components = {
     Button: {
         baseStyle: {
@@ -63,7 +58,6 @@ const components = {
     },
 }
 
-// Cria e exporta o tema
 const theme = extendTheme({
     config,
     colors,

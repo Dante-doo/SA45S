@@ -1,5 +1,3 @@
-// src/api/chat.ts
-
 import axios from 'axios';
 
 export interface MessageDto {
@@ -12,21 +10,18 @@ export interface MessageDto {
     timestamp: string;
 }
 
-// pega as mensagens que você recebeu
 export function fetchInbox(): Promise<MessageDto[]> {
     return axios
         .get<MessageDto[]>('/api/chat/inbox')
         .then(res => res.data);
 }
 
-// pega as mensagens que você enviou
 export function fetchSent(): Promise<MessageDto[]> {
     return axios
         .get<MessageDto[]>('/api/chat/sent')
         .then(res => res.data);
 }
 
-// envia uma nova mensagem
 export function sendMessage(payload: {
     receiver: string;
     encryptedAesKey: string;

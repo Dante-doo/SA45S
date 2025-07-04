@@ -10,8 +10,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    // NÃO PRECISAMOS MAIS DO INTERCEPTOR. Pode remover o @Autowired e o método configureClientInboundChannel.
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -21,7 +19,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                // MUDANÇA IMPORTANTE AQUI: Adicione o HandshakeHandler
                 .setHandshakeHandler(new UserHandshakeHandler())
                 .setAllowedOrigins(
                         "http://localhost:5173",

@@ -18,10 +18,6 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
-    /**
-     * @deprecated Este endpoint foi substituído pelo WebSocket em WebSocketChatController
-     * para comunicação em tempo real. Mantido para fins de teste ou fallback.
-     */
     @Deprecated
     @PostMapping("/send")
     @ResponseStatus(HttpStatus.CREATED)
@@ -29,15 +25,13 @@ public class ChatController {
         String receiver = body.get("receiver");
         String encryptedAesKey = body.get("encryptedAesKey");
         String encryptedMessage = body.get("encryptedMessage");
-        String iv = body.get("iv"); // <-- ADICIONADO
+        String iv = body.get("iv");
         String hmac = body.get("hmac");
 
-        // Adiciona a verificação para o novo campo 'iv'
         if (receiver == null || encryptedAesKey == null || encryptedMessage == null || iv == null || hmac == null) {
             throw new IllegalArgumentException("Missing fields in message body");
         }
 
-        // --- ATUALIZAÇÃO DA CHAMADA AO SERVIÇO ---
         return chatService.sendMessage(
                 principal.getName(),
                 receiver,
@@ -46,9 +40,6 @@ public class ChatController {
                 iv
         );
     }
-
-    // Os outros endpoints (/inbox, /sent, /delete) continuam válidos e úteis
-    // para carregar o histórico de mensagens ou gerenciar mensagens salvas.
 
     @GetMapping("/inbox")
     public List<Message> inbox(Principal principal) throws Exception {

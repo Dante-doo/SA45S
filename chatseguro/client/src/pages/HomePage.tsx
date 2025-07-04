@@ -1,4 +1,3 @@
-// src/pages/HomePage.tsx
 import React from 'react'
 import {
     Box,
@@ -44,7 +43,7 @@ export default function HomePage() {
                     borderRadius="lg"
                     p={{ base: 6, md: 12 }}
                     maxW={{ base: '90%', md: '600px' }}
-                    mx="auto"               // centraliza horizontal
+                    mx="auto"
                 >
                     <VStack spacing={{ base: 6, md: 10 }} textAlign="center">
                         <Heading

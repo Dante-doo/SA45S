@@ -58,7 +58,7 @@ public class JwtService {
     private io.jsonwebtoken.Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
-                .setSigningKey(getSignKey()) // ✔️ CORRETO
+                .setSigningKey(getSignKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

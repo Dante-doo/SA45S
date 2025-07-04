@@ -24,7 +24,7 @@ public class User {
 
     @Column(nullable = false)
     @Size(max = 700)
-    private String publicKey; // Armazena a chave pública RSA do usuário
+    private String publicKey;
 
     public User() {
     }
@@ -35,8 +35,6 @@ public class User {
         this.passwordHash = passwordHash;
         this.publicKey = publicKey;
     }
-
-    // Getters e Setters
 
     public UUID getId() {
         return id;
